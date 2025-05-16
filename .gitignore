@@ -18,7 +18,7 @@ Homestead.yaml
 npm-debug.log
 public/css/*
 public/fonts/vendor/*
-public/images/logos/*
+
 public/js/*
 resources/sass/_env.scss
 yarn-error.log
