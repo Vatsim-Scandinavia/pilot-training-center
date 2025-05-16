@@ -27,9 +27,7 @@ return [
     | Needs to be updated manually for each iteration we do.
     |
     */
-    /* x-release-please-start-version */
     'version' => '1.0.0',
-    /* x-release-please-end */
 
     /*
     |--------------------------------------------------------------------------
