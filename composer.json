@@ -16,7 +16,7 @@
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.5.2",
-        "league/commonmark": "^2.4",
+        "league/commonmark": "^2.7",
         "league/flysystem-aws-s3-v3": "^3.28",
         "league/oauth2-client": "^2.7",
         "sentry/sentry-laravel": "^4.3",
