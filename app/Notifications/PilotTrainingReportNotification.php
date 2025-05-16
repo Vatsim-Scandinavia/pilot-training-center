@@ -46,7 +46,6 @@ class PilotTrainingReportNotification extends Notification implements ShouldQueu
             'Your instructor ' . $this->report->author->name . ' has written a new report for your training.',
         ];
         $contactMail = Setting::get('ptmEmail');
-        dd($contactMail);
 
         return (new PilotTrainingMail('Training Report', $this->training, $textLines, $contactMail, null, null, route('pilot.training.show', $this->training->id), 'Read Report'))
             ->to($this->training->user->notificationEmail, $this->training->user->name);

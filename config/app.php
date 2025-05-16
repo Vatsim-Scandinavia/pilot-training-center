@@ -27,9 +27,7 @@ return [
     | Needs to be updated manually for each iteration we do.
     |
     */
-    /* x-release-please-start-version */
-    'version' => '0.0.5',
-    /* x-release-please-end */
+    'version' => '1.0.2',
 
     /*
     |--------------------------------------------------------------------------
@@ -233,10 +231,10 @@ return [
     |--------------------------------------------------------------------------
     | Network & Requests
     |--------------------------------------------------------------------------
-    | Configure the list of proxies that you trust if you are running Control
+    | Configure the list of proxies that you trust if you are running Pilot Training
     | Center behind a proxy such as nginx, traefik or similarly.
     | Separate allowed proxies with a comma (no space!).
-    | If you're running Control Center in a container, you may set it to '*'.
+    | If you're running Pilot Training Center in a container, you may set it to '*'.
     */
     'proxies' => [
         'trusted' => env('TRUSTED_PROXIES'),

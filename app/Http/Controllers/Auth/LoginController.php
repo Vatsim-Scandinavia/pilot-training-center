@@ -74,17 +74,10 @@ class LoginController extends Controller
         $data = OAuthController::mapOAuthProperties($resourceOwner);
 
         if (
-            ! $data['id'] ||
-            ! $data['email'] ||
-            ! $data['first_name'] ||
-            ! $data['last_name'] ||
-            ! $data['rating'] ||
-            ! $data['rating_short'] ||
-            ! $data['rating_long'] ||
-            ! $data['pilotrating'] ||
-            ! $data['pilotrating_short'] ||
-            ! $data['pilotrating_long'] ||
-            ! $data['region']
+            ! isset($data['id'], $data['email'], $data['first_name'], $data['last_name'],
+                $data['rating'], $data['rating_short'], $data['rating_long'],
+                $data['pilotrating'], $data['pilotrating_short'], $data['pilotrating_long'],
+                $data['region'])
         ) {
             return redirect()->route('front')->withError('Missing data from sign-in request. You need to grant all permissions.');
         }
