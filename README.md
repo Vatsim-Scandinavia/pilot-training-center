@@ -1,8 +1,10 @@
 ## Pilot Training Center (PTC)
 
-Training Management System created by [Daniel L.](https://github.com/blt950) (1352906) and others from Web Department at VATSIM Scandinavia. Adapted for pilot training.
+Training Management System created by [Daniel L.](https://github.com/blt950) (1352906) and others from Tech Department at VATSIM Scandinavia. Adapted for pilot training.
 
 Original: https://github.com/Vatsim-Scandinavia/controlcenter
+
+For issues and support contact: @sorenkai
 
 ## How to install
 
