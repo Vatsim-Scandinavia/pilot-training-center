@@ -31,7 +31,7 @@ class CheckUpdate extends Command
     {
 
         $currentVersion = 'v' . config('app.version');
-        $releasedData = Http::get('https://api.github.com/repos/Sorenkai/pilot-training-center/releases')->json();
+        $releasedData = Http::get('https://api.github.com/repos/Vatsim-Scandinavia/pilot-training-center/releases')->json();
 
         if (isset($releasedData) && isset($releasedData[0]) && isset($releasedData[0]['name'])) {
             $releasedVersion = $releasedData[0]['name'];
