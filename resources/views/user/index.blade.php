@@ -30,7 +30,7 @@
                                 <th data-field="lastname" data-sortable="true" data-filter-control="input">Last Name</th>
                                 <th data-field="rating" data-sortable="true" data-filter-control="select" data-filter-strict-search="true">Pilot Rating</th>
                                 <th>Last Training</th>
-                                <th>Joined VATSIM</th>
+                                <th>Last Login</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -46,7 +46,7 @@
                                             @endphp
                                             {{ $pilotTraining ? $pilotTraining->updated_at->diffForHumans() : 'N/A' }}
                                         </td>
-                                        <td>{{ Carbon\Carbon::create($user['reg_date'])->toEuropeanDate() }}</td>
+                                        <td>{{ Carbon\Carbon::create($user['last_login'])->toEuropeanDate() }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
