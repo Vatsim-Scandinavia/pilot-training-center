@@ -35,7 +35,7 @@
                                 </div>
                             @else
                             <div class="alert alert-warning" role="alert">
-                                You're running an old version. <a href="https://github.com/Sorenkai/pilot-training-center/releases" target="_blank">Update {{ Setting::get('_updateAvailable') }} available.</a>
+                                You're running an old version. <a href="https://github.com/Vatsim-Scandinia/pilot-training-center/releases" target="_blank">Update {{ Setting::get('_updateAvailable') }} available.</a>
                             </div>
                             @endif
 

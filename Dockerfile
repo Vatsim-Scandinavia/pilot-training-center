@@ -1,6 +1,6 @@
 FROM docker.io/library/node:22.13.1-alpine as frontend
 
-LABEL org.opencontainers.image.source=https://github.com/Sorenkai/pilot-training-center
+LABEL org.opencontainers.image.source=https://github.com/Vatsim-Scandinavia/pilot-training-center
 
 WORKDIR /app
 COPY ./ /app/
