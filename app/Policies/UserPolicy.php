@@ -38,7 +38,7 @@ class UserPolicy
      */
     public function viewAccess(User $user)
     {
-        return $user->isInstructorOrAbove();
+        return $user->isAdmin();
     }
 
     /**
