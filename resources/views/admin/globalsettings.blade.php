@@ -102,15 +102,6 @@
                             @enderror
 
                             <div class="mb-4">
-                                <label class="form-label" for="exmUrl">Exam Template URL</label>
-                                <input type="url" class="form-control @error('trainingExamTemplate') is-invalid @enderror" id="exmUrl" name="trainingExamTemplate" value="{{ (Setting::get("trainingExamTemplate") != false) ? Setting::get("trainingExamTemplate") : '' }}">
-                                <small class="form-text">Link to examination template for examiners. Leave blank to disable.</small>
-                            </div>
-                            @error('trainingExamTemplate')
-                                <span class="text-danger">{{ $errors->first('trainingExamTemplate') }}</span>
-                            @enderror
-
-                            <div class="mb-4">
                                 <label class="form-label" for="trainingSubDivisions">Subdivisions accepted for training</label>
                                 <input type="text" class="form-control @error('trainingSubDivisions') is-invalid @enderror" id="trainingSubDivisions" name="trainingSubDivisions" value="{{ Setting::get("trainingSubDivisions") }}">
                                 <small class="form-text">List subdivisions separated by comma, e.g. SCA, ITA</small>
