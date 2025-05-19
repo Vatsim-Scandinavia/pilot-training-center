@@ -53,7 +53,7 @@
             </div>
         </div>
 
-        <!-- Student SOP -->
+        <!-- Training Agreement -->
         <div class="row" style="display: none" v-show="step === 2">
             <div class="col-xl-12 col-md-12 mb-12">
                 <div class="card shadow mb-4">
@@ -62,9 +62,12 @@
                     </div>
                     <div class="card-body">
 
-                        <p>Please familiarize yourself with the Operations Manual below, and accept the terms by continuing to the next step. If you can't see the document below, <a href="{{ asset('docs/OM.pdf') }}" target="_blank">click here</a>.</p>
-
-                        <embed src="{{ asset('docs/OM.pdf') }}" type="application/pdf" width="100%" height="800px">
+                        @if(Str::of(Setting::get('trainingSOP'))->endsWith('.pdf'))
+                            <p>Please familiarize yourself with the Training Agreement below, and accept the terms by continuing to the next step. If you can't see the document below, <a href="{{ Setting::get('trainingSOP') }}" target="_blank">click here</a>.</p>
+                            <embed src="{{ Setting::get('trainingSOP') }}" type="application/pdf" type="text/html" width="100%" height="800px">    
+                        @else
+                            <p>Please read through the <a href="{{ Setting::get('trainingSOP') }}" target="_blank">policy for students</a> and accept the terms by continuing to the next step.</p>
+                        @endif
 
                         <a class="btn btn-success"  href="#" v-on:click="next">I accept</a>
                     </div>
