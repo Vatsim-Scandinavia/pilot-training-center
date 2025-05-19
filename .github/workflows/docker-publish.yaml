@@ -26,10 +26,7 @@ jobs:
           IMAGE_NAME=$(echo "ghcr.io/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           TAG=${{ github.ref_name }}
 
-          docker buildx create --use
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
             --tag ${IMAGE_NAME}:${TAG} \
-            --cache-from=type=registry,ref=${IMAGE_NAME}:buildcache \
-            --cache-to=type=registry,ref=${IMAGE_NAME}:buildcache,mode=max \
             --push .
