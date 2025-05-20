@@ -63,11 +63,11 @@ class DashboardController extends Controller
         // Cache the pilot hours for 1 hour
         $cachekey = 'pilot_hours_' . $user->id;
 
-        $vatsimStats = Cache::remember($cachekey, 120, function() use ($user){
+        $vatsimStats = Cache::remember($cachekey, 120, function () use ($user) {
             $client = new \GuzzleHttp\Client();
 
-            $url = App::environment('production') 
-                ? 'https://api.vatsim.net/api/ratings/' . $user->id . '/rating_times/' 
+            $url = App::environment('production')
+                ? 'https://api.vatsim.net/api/ratings/' . $user->id . '/rating_times/'
                 : 'https://api.vatsim.net/api/ratings/819096/rating_times/';
 
             try {
