@@ -45,9 +45,12 @@ class PilotTrainingCreatedNotification extends Notification implements ShouldQue
             'We hereby confirm that we have received your training request for ' . $this->training->getInlineRatings() . '.',
             'Your callsign is: **' . $this->training->callsign->callsign . '**, which will be used for DUAL and solo flights.',
             'The theory is completed at your own pace and ther is no specific deadline for the exam.',
+            '',
             'You\'ll need to log in to Moodle once before we can grant you access.',
+            '',
             'After successfully completing the theoretical exam, you will start practical flight training together with your assigned instructor.',
             'The theoretical material and other documents are available on the VATSIM Scandinavia wiki.',
+            '',
             'If you have any questions, feel free to contact your instructor or ask in the pilot training channel on [Discord](' . Setting::get('linkDiscord') . ').',
         ];
 
