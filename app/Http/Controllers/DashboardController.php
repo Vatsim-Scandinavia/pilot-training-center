@@ -8,6 +8,7 @@ use App\Models\PilotTrainingReport;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Controller for the dashboard
@@ -59,20 +60,27 @@ class DashboardController extends Controller
 
         $workmailRenewal = (isset($user->setting_workmail_expire)) ? (Carbon::parse($user->setting_workmail_expire)->diffInDays(Carbon::now(), false) > -7) : false;
 
-        $client = new \GuzzleHttp\Client();
-        if (App::environment('production')) {
-            $res = $client->request('GET', 'https://api.vatsim.net/api/ratings/' . $user->id . '/rating_times/');
-        } else {
-            $res = $client->request('GET', 'https://api.vatsim.net/api/ratings/819096/rating_times/');
-        }
+        // Cache the pilot hours for 1 hour
+        $cachekey = 'pilot_hours_' . $user->id;
 
-        if ($res->getStatusCode() == 200) {
-            $vatsimStats = json_decode($res->getBody(), true);
-        } else {
-            return redirect()->back()->withErrors('We were unable to load the application for you due to missing data from VATSIM. Please try again later.');
-        }
+        $vatsimStats = Cache::remember($cachekey, 120, function() use ($user){
+            $client = new \GuzzleHttp\Client();
 
-        $pilotHours = $vatsimStats['pilot'];
+            $url = App::environment('production') 
+                ? 'https://api.vatsim.net/api/ratings/' . $user->id . '/rating_times/' 
+                : 'https://api.vatsim.net/api/ratings/819096/rating_times/';
+
+            try {
+                $res = $client->request('GET', $url);
+                if ($res->getStatusCode() === 200) {
+                    return json_decode($res->getBody(), true);
+                }
+            } catch (\Exception $e) {
+                return null;
+            }
+        });
+
+        $pilotHours = $vatsimStats['pilot'] ?? null;
 
         $studentTrainings = \Auth::user()->instructingTrainings();
 
