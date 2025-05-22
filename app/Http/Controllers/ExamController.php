@@ -19,11 +19,11 @@ class ExamController extends Controller
         // Only show trainings that are in have AWAITING_EXAM status
         if ($prefillUserId) {
             $users = User::where('id', $prefillUserId)->with(['pilotTrainings' => function ($query) {
-                $query->where('status', 3);
+                $query->where('status', 1);
             }, 'pilotTrainings.pilotRatings'])->get();
         } else {
             $users = User::with(['pilotTrainings' => function ($query) {
-                $query->where('status', 3);
+                $query->where('status', 1);
             }, 'pilotTrainings.pilotRatings'])->get();
         }
 
