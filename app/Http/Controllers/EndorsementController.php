@@ -149,4 +149,13 @@ class EndorsementController extends Controller
 
         return redirect()->intended(route('roster'))->withSuccess("{$user->name}'s endorsements updated");
     }
+
+    private static function createInstructorEndorsementModel(User $user, PilotRating $rating)
+    {
+        $endorsement = new InstructorEndorsement();
+        $endorsement->user_id = $user->id;
+        $endorsement->pilot_rating_id = $rating->id;
+        $endorsement->issued_by = \Auth::user()->id;
+        $endorsement->save();
+    }
 }
