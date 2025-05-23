@@ -253,7 +253,7 @@
                 <div class="text-center">
                     <img class="img-fluid px-3 px-sm-4 mb-4" style="width: 25rem;" src="images/apply_training.png" alt="">
                 </div>
-                <p>Are you interested in getting your first pilot rating? Wish to receive training for a higher rating? Request training below and you will be with further instructions.</p>
+                <p>Are you interested in getting your first pilot rating? Wish to receive training for a higher rating? Request training below and you will, receive further instructions.</p>
                 
                 @can('apply', \App\Models\PilotTraining::class)
                 <div class="d-grid">
