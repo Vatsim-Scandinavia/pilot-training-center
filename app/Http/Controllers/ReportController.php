@@ -12,7 +12,6 @@ use App\Models\PilotTrainingActivity;
 use App\Models\PilotTrainingReport;
 use App\Models\Training;
 use App\Models\TrainingActivity;
-use App\Models\TrainingReport;
 use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -89,17 +88,20 @@ class ReportController extends Controller
 
         $activities = PilotTrainingActivity::with('pilotTraining', 'pilotTraining.pilotRatings', 'pilotTraining.user', 'user')->orderByDesc('created_at')->limit(100)->get();
 
-        // Fetch TrainingReport and ExaminationReport from last activity to now
-        $trainingReports = PilotTrainingReport::where('created_at', '>=', $activities->last()->created_at)->get();
+        // Fetch TrainingReports, if any merge with activities
+        if ($activities->count() > 0) {
+            $trainingReports = PilotTrainingReport::where('created_at', '>=', $activities->last()->created_at)->get();
+            $entries = $activities->merge($trainingReports);
+        } else {
+            $entries = $activities;
+        }
 
-        $entries = $activities->merge($trainingReports);
-
-        // Do the rest
+        $entries = $entries->sortByDesc('created_at');
         $statuses = PilotTrainingController::$statuses;
 
         $areas = Area::all();
 
-        return view('reports.activities', compact('trainingReports', 'statuses', 'areas', 'entries'));
+        return view('reports.activities', compact('statuses', 'areas', 'entries'));
     }
 
     /**

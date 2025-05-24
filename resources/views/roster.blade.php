@@ -4,7 +4,7 @@
 @section('title-flex')
     <div>
         @if (\Auth::user()->isAdmin())
-            <a href="{{ route('endorsements.create') }}" class="btn btn-outline-success"><i class="fas fa-plus"></i> Add new endorsement</a>
+            <a href="{{ route('endorsements.create') }}" class="btn btn-outline-success"><i class="fas fa-edit"></i> Edit Endorsements</a>
         @endif
     </div>
 @endsection

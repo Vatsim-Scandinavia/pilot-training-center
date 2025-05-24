@@ -2,17 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Facades\DivisionApi;
 use App\Models\Area;
 use App\Models\Endorsement;
 use App\Models\InstructorEndorsement;
 use App\Models\PilotRating;
 use App\Models\User;
-use App\Notifications\EndorsementModifiedNotification;
-use App\Notifications\EndorsementRevokedNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class EndorsementController extends Controller
 {
@@ -82,13 +78,18 @@ class EndorsementController extends Controller
     {
         $this->authorize('create', Endorsement::class);
         if ($prefillUserId) {
-            $users = collect(User::where('id', $prefillUserId)->get());
+            $users = User::with('instructorEndorsements')->where('id', $prefillUserId)->get();
         } else {
             $users = User::allWithGroup(4);
+            $users->load('instructorEndorsements');
         }
-        $ratings = PilotRating::whereIn('vatsim_rating', [1, 3, 7, 15])->get();
+        $ratings = PilotRating::whereIn('vatsim_rating', [1, 3, 7, 15, 63])->get();
 
-        return view('endorsements.create', compact('users', 'ratings', 'prefillUserId'));
+        $userEndorsementsMap = $users->mapWithKeys(function ($user) {
+            return [$user->id => $user->instructorEndorsements->pluck('pilot_rating_id')->toArray()];
+        });
+
+        return view('endorsements.create', compact('users', 'ratings', 'prefillUserId', 'userEndorsementsMap'));
     }
 
     /**
@@ -100,138 +101,53 @@ class EndorsementController extends Controller
     {
         $this->authorize('create', [Endorsement::class]);
 
-        $data = [];
-        $data = request()->validate([
-            'user' => 'required|numeric|exists:App\Models\User,id',
-            'rating' => 'required|array',
+        $data = $request->validate([
+            'user' => 'required|numeric|exists:users,id',
+            'rating' => 'sometimes|array',
+            'rating.*' => 'exists:pilot_ratings,id',
         ]);
 
-        $user = User::find($data['user']);
-        // check if pilot endorsement exists
+        $user = User::findOrFail($data['user']);
 
-        foreach ($data['rating'] as $rating) {
-            $r = PilotRating::find($rating);
+        if (! $user->isInstructor()) {
+            return redirect()->back()->withErrors('User is not an instructor');
+        }
 
-            // Check if the record already exists
-            $existingEndorsement = InstructorEndorsement::where('user_id', $user->id)
-                ->where('pilot_rating_id', $r->id)
-                ->first();
+        // Get current rating endorsements
+        $existing = $user->instructorEndorsements()->pluck('pilot_rating_id')->toArray();
 
-            if ($existingEndorsement) {
-                return redirect()->back()->withErrors('An endorsement for this user and rating already exists.');
-            }
-            self::createInstructorEndorsementModel($user, $r);
+        // New set of selected ratings from the form
+        $new = $data['rating'] ?? [];
 
-            // log endorsement
+        // Determine ratings to add and remove
+        $toAdd = array_diff($new, $existing);
+        $toRemove = array_diff($existing, $new);
+
+        // Add new endorsements
+        foreach ($toAdd as $ratingId) {
+            $rating = PilotRating::find($ratingId);
+            self::createInstructorEndorsementModel($user, $rating);
+
             ActivityLogController::warning('ENDORSEMENT', 'Created instructor endorsement ' .
-            ' ― User: ' . $user->id .
-            ' ― Rating: ' . $r->name);
+                ' ― User: ' . $user->id .
+                ' ― Rating: ' . $rating->name);
         }
 
-        return redirect()->intended(route('roster'))->withSuccess($user->name . "'s endorsement created");
-    }
+        // Remove unselected endorsements
+        if (! empty($toRemove)) {
+            InstructorEndorsement::where('user_id', $user->id)
+                ->whereIn('pilot_rating_id', $toRemove)
+                ->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Endorsement  $endorsement
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($endorsementId)
-    {
-        $endorsement = Endorsement::findOrFail($endorsementId);
-        $this->authorize('delete', [Endorsement::class, $endorsement]);
-        $user = User::find($endorsement->user_id);
-
-        if ($endorsement->revoked) {
-            return redirect()->back()->withErrors($user->name . "'s " . $endorsement->type . ' endorsement is already revoked.');
-        }
-
-        if ($endorsement->type == 'EXAMINER') {
-            $response = DivisionApi::removeExaminer($user, $endorsement, Auth::id());
-            if ($response && $response->failed()) {
-                return back()->withErrors('Request failed due to error in ' . DivisionApi::getName() . ' API: ' . $response->json()['message']);
-            }
-        } elseif ($endorsement->type == 'FACILITY') {
-            if (isset($endorsement->ratings->first()->endorsement_type)) {
-                $response = DivisionApi::revokeTierEndorsement($endorsement->ratings->first()->endorsement_type, $endorsement->user->id, $endorsement->ratings->first()->name);
-                if ($response && $response->failed()) {
-                    return back()->withErrors('Request failed due to error in ' . DivisionApi::getName() . ' API: ' . $response->json()['message']);
-                }
-            }
-        } elseif ($endorsement->type == 'SOLO') {
-            $response = DivisionApi::revokeSoloEndorsement($endorsement);
-            if ($response && $response->failed()) {
-                return back()->withErrors('Request failed due to error in ' . DivisionApi::getName() . ' API: ' . $response->json()['message']);
+            foreach ($toRemove as $ratingId) {
+                $rating = PilotRating::find($ratingId);
+                ActivityLogController::warning('ENDORSEMENT', 'Removed instructor endorsement ' .
+                    ' ― User: ' . $user->id .
+                    ' ― Rating: ' . $rating->name);
             }
         }
 
-        $endorsement->revoked = true;
-        $endorsement->revoked_by = \Auth::user()->id;
-        $endorsement->valid_to = now();
-        $endorsement->save();
-
-        ActivityLogController::warning('ENDORSEMENT', 'Deleted ' . $user->name . '\'s ' . $endorsement->type . ' endorsement');
-        if ($endorsement->type == 'SOLO') {
-            $endorsement->user->notify(new EndorsementRevokedNotification($endorsement));
-
-            return redirect()->back()->withSuccess(User::find($endorsement->user_id)->name . "'s " . $endorsement->type . ' endorsement revoked. E-mail confirmation sent to the student.');
-        }
-
-        return redirect()->back()->withSuccess(User::find($endorsement->user_id)->name . "'s " . $endorsement->type . ' endorsement revoked.');
-    }
-
-    /**
-     * Shorten the specified resource from storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function shorten($endorsementId, $date)
-    {
-        $endorsement = Endorsement::findOrFail($endorsementId);
-        $this->authorize('shorten', [Endorsement::class, $endorsement]);
-
-        $date = Carbon::parse($date);
-
-        if ($date->gt($endorsement->valid_to)) {
-            return redirect()->back()->withErrors('You can not shorten an endorsement to a future date.');
-        }
-
-        $date->setHour(12)->setMinute(00);
-
-        // Push updated date to API
-        $response = DivisionApi::assignSoloEndorsement($endorsement->user, $endorsement->positions->first(), Auth::id(), $date);
-        if ($response && $response->failed()) {
-            return back()->withErrors('Request failed due to error in ' . DivisionApi::getName() . ' API: ' . $response->json()['message']);
-        }
-
-        // Save new date
-        $endorsement->valid_to = $date;
-        $endorsement->save();
-
-        ActivityLogController::warning('ENDORSEMENT', 'Shortened ' . User::find($endorsement->user_id)->name . '\'s ' . $endorsement->type . ' endorsement to date ' . $date);
-        $endorsement->user->notify(new EndorsementModifiedNotification($endorsement));
-
-        return redirect()->back()->withSuccess(User::find($endorsement->user_id)->name . "'s " . $endorsement->type . ' endorsement shortened to ' . Carbon::parse($date)->toEuropeanDateTime() . '. E-mail sent to student.');
-    }
-
-    /**
-     * Private function to create an endorsement object
-     *
-     * @param  string  $endorsementType
-     * @param  string  $valid_to
-     * @return \App\Models\Endorsement
-     */
-    private function createEndorsementModel($endorsementType, User $user, $valid_to = null)
-    {
-        $endorsement = new Endorsement();
-        $endorsement->user_id = $user->id;
-        $endorsement->type = $endorsementType;
-        $endorsement->issued_by = \Auth::user()->id;
-        $endorsement->save();
-
-        return $endorsement;
+        return redirect()->intended(route('roster'))->withSuccess("{$user->name}'s endorsements updated");
     }
 
     private static function createInstructorEndorsementModel(User $user, PilotRating $rating)

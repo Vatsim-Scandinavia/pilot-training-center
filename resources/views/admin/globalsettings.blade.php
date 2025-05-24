@@ -35,7 +35,7 @@
                                 </div>
                             @else
                             <div class="alert alert-warning" role="alert">
-                                You're running an old version. <a href="https://github.com/Sorenkai/pilot-training-center/releases" target="_blank">Update {{ Setting::get('_updateAvailable') }} available.</a>
+                                You're running an old version. <a href="https://github.com/Vatsim-Scandinia/pilot-training-center/releases" target="_blank">Update {{ Setting::get('_updateAvailable') }} available.</a>
                             </div>
                             @endif
 
@@ -99,15 +99,6 @@
                             </div>
                             @error('trainingSOP')
                                 <span class="text-danger">{{ $errors->first('trainingSOP') }}</span>
-                            @enderror
-
-                            <div class="mb-4">
-                                <label class="form-label" for="exmUrl">Exam Template URL</label>
-                                <input type="url" class="form-control @error('trainingExamTemplate') is-invalid @enderror" id="exmUrl" name="trainingExamTemplate" value="{{ (Setting::get("trainingExamTemplate") != false) ? Setting::get("trainingExamTemplate") : '' }}">
-                                <small class="form-text">Link to examination template for examiners. Leave blank to disable.</small>
-                            </div>
-                            @error('trainingExamTemplate')
-                                <span class="text-danger">{{ $errors->first('trainingExamTemplate') }}</span>
                             @enderror
 
                             <div class="mb-4">
@@ -215,77 +206,6 @@
                             @error('linkWiki')
                                 <span class="text-danger">{{ $errors->first('linkWiki') }}</span>
                             @enderror
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card shadow mb-4">
-                <div class="card-header bg-primary py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 fw-bold text-white">Division API</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-xl-12 col-md-12 mb-12">
-
-                            <div class="form-check mb-4">
-                                <input class="form-check-input @error('divisionApiEnabled') is-invalid @enderror" type="checkbox" id="divisionApiEnabled" name="divisionApiEnabled" {{ Setting::get('divisionApiEnabled') ? "checked" : "" }}>
-                                <label class="form-check-label" for="divisionApiEnabled">
-                                    Enable division API calls
-                                </label>
-                                <small class="form-text d-block">Automatic calls based on the environmental configuration.</small>
-                            </div>
-                            
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card shadow mb-4">
-                <div class="card-header bg-primary py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 fw-bold text-white">Feedback</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-xl-12 col-md-12 mb-12">
-
-                            <div class="form-check mb-4">
-                                <input class="form-check-input @error('feedbackEnabled') is-invalid @enderror" type="checkbox" id="checkFeedback" name="feedbackEnabled" {{ Setting::get('feedbackEnabled') ? "checked" : "" }}>
-                                <label class="form-check-label" for="checkFeedback">
-                                    Enable feedback functionality
-                                </label>
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="form-label" for="feedbackForwardEmail">Forward feedback to e-mail</label>
-                                <input type="email" class="form-control @error('feedbackForwardEmail') is-invalid @enderror" id="feedbackForwardEmail" name="feedbackForwardEmail" value="{{ (Setting::get("feedbackForwardEmail") != false) ? Setting::get("feedbackForwardEmail") : '' }}">
-                                <small class="form-text">Forward feedback to the provided address. Leave blank to disable.</small>
-                            </div>
-                            @error('feedbackForwardEmail')
-                                <span class="text-danger">{{ $errors->first('feedbackForwardEmail') }}</span>
-                            @enderror
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card shadow mb-4">
-                <div class="card-header bg-primary py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 fw-bold text-white">Telemetry</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-xl-12 col-md-12 mb-12">
-
-                            <div class="form-check">
-                                <input class="form-check-input @error('telemetryEnabled') is-invalid @enderror" type="checkbox" id="checkTele" name="telemetryEnabled" {{ Setting::get('telemetryEnabled') ? "checked" : "" }}>
-                                <label class="form-check-label" for="checkTele">
-                                    Enable telemetry
-                                </label>
-                                <small class="form-text d-block">This is used to prioritise development based on stats and who is using Pilot Training Center. Telemetry only sends the url, version and division name.</small>
-                            </div>
 
                         </div>
                     </div>

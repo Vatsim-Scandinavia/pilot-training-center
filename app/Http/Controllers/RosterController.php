@@ -14,7 +14,7 @@ class RosterController extends Controller
     public function index()
     {
         $users = User::allWithGroup(4);
-        $ratings = PilotRating::whereIn('id', [2, 3, 4, 5])->get();
+        $ratings = PilotRating::whereIn('id', [2, 3, 4, 5, 7])->get();
         $endorsements = InstructorEndorsement::all();
 
         return view('roster', compact('users', 'ratings', 'endorsements'));

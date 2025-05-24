@@ -328,7 +328,7 @@
                                             @foreach($groups as $group)
 
                                                 @php
-                                                    $shouldRender = !($group->id == 4 && $area->id != 2);
+                                                    $shouldRender = !($group->id == 4 && $area->id != 1);
                                                     $hasPermission = \Illuminate\Support\Facades\Gate::inspect('updateGroup', [$user, $group, $area])->allowed();
                                                     $isChecked = $user->groups()->where('group_id', $group->id)->where('area_id', $area->id)->count() > 0;
                                                 @endphp
