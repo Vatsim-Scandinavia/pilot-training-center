@@ -83,7 +83,7 @@ class EndorsementController extends Controller
             $users = User::allWithGroup(4);
             $users->load('instructorEndorsements');
         }
-        $ratings = PilotRating::whereIn('vatsim_rating', [1, 3, 7, 15])->get();
+        $ratings = PilotRating::whereIn('vatsim_rating', [1, 3, 7, 15, 63])->get();
 
         $userEndorsementsMap = $users->mapWithKeys(function ($user) {
             return [$user->id => $user->instructorEndorsements->pluck('pilot_rating_id')->toArray()];
