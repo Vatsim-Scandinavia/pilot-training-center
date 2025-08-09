@@ -167,8 +167,6 @@
 
         // Update the hidden input with the lesson_id
         document.getElementById('lesson_id').value = lessonId;
-
-        console.log('Selected lesson_id:', lessonId);
     });
 </script>
 
