@@ -25,7 +25,7 @@ Moodle - {{ $url2 }}
 {{-- Subcopy --}}
 @isset($contactMail)
 @slot('subcopy')
-For questions regarding your training, contact [jere.heiskanen@vatsim-scandinavia.org](mailto:jere.heiskanen@vatsim-scandinavia.org)
+For questions regarding your training, contact [{{Setting::get('ptmEmail')}}](mailto:{{Setting::get('ptmEmail')}})
 @endslot
 @endisset
 
