@@ -16,23 +16,23 @@ class PilotTrainingPolicy
     public function view(User $user, PilotTraining $pilotTraining)
     {
         return $pilotTraining->instructors->contains($user) ||
-            $user->isInstructorOrAbove() ||
+            $user->isAdmin() ||
             $user->is($pilotTraining->user);
     }
 
     public function edit(User $user)
     {
-        return $user->isInstructorOrAbove();
+        return $user->isAdmin();
     }
 
     public function create(User $user)
     {
-        return $user->isInstructorOrAbove();
+        return $user->isAdmin();
     }
 
     public function update(User $user)
     {
-        return $user->isInstructorOrAbove();
+        return $user->isAdmin();
     }
 
     public function store(User $user, $data)
@@ -41,17 +41,17 @@ class PilotTrainingPolicy
             return true;
         }
 
-        return $user->isInstructorOrAbove();
+        return $user->isAdmin();
     }
 
     public function viewActiveRequests(User $user)
     {
-        return $user->isInstructorOrAbove();
+        return $user->isAdmin();
     }
 
     public function viewHistoricRequests(User $user)
     {
-        return $user->isInstructorOrAbove();
+        return $user->isAdmin();
     }
 
     public function apply(User $user)

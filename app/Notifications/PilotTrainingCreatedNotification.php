@@ -56,7 +56,7 @@ class PilotTrainingCreatedNotification extends Notification implements ShouldQue
 
         $bcc = User::allWithGroup(4)->where('setting_notify_newreq', true);
         foreach ($bcc as $key => $user) {
-            if (! $user->isInstructorOrAbove()) {
+            if (! $user->isAdmin()) {
                 $bcc->pull($key);
             }
         }

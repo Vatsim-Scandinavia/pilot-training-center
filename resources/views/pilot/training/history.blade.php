@@ -3,7 +3,7 @@
 @section('title', 'Closed Pilot Training Requests')
 @section('title-flex')
     <div>
-        @if (\Auth::user()->isInstructorOrAbove())
+        @if (\Auth::user()->isAdmin())
             <a href="{{ route('pilot.training.create') }}" class="btn btn-outline-success"><i class="fas fa-plus"></i> Add new request</a>
         @endif
     </div>
