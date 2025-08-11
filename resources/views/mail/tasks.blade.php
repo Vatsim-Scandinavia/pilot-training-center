@@ -6,6 +6,7 @@
 {{-- Intro Lines --}}
 @foreach ($textLines as $line)
 {{ $line }}
+
 @endforeach
 
 {{-- Action Button --}}

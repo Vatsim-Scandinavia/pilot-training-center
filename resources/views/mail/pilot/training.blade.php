@@ -6,6 +6,7 @@
 {{-- Intro Lines --}}
 @foreach ($textLines as $line)
 {{ $line }}
+
 @endforeach
 
 @if ($url1)
@@ -25,7 +26,7 @@ Moodle - {{ $url2 }}
 {{-- Subcopy --}}
 @isset($contactMail)
 @slot('subcopy')
-For questions regarding your training, contact [jere.heiskanen@vatsim-scandinavia.org](mailto:jere.heiskanen@vatsim-scandinavia.org)
+For questions regarding your training, contact [{{ $contactMail }}](mailto:{{ $contactMail }})
 @endslot
 @endisset
 
