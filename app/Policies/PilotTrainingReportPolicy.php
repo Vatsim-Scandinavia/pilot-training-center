@@ -16,7 +16,6 @@ class PilotTrainingReportPolicy
     {
         return $training->instructors->contains($user) ||
             $user->is($training->user) ||
-            $user->isInstructor() ||
             $user->isAdmin();
     }
 
@@ -24,20 +23,19 @@ class PilotTrainingReportPolicy
     {
         return $trainingReport->pilotTraining->instructors->contains($user) ||
                 $user->isAdmin() ||
-                $user->isInstructor() ||
                 ($user->is($trainingReport->pilotTraining->user) && ! $trainingReport->draft);
     }
 
-    public function create(User $user)
+    public function create(User $user, PilotTraining $training)
     {
-        return $user->isAdmin() || $user->isInstructor();
+        return $training->instructors->contains($user) ||
+            $user->isAdmin();
     }
 
     public function update(User $user, PilotTrainingReport $trainingReport)
     {
         return $trainingReport->pilotTraining->instructors->contains($user) ||
-                $user->isAdmin() ||
-                $user->isInstructor();
+                $user->isAdmin();
     }
 
     public function delete(User $user, PilotTrainingReport $trainingReport)

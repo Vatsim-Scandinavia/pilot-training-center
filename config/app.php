@@ -27,7 +27,7 @@ return [
     | Needs to be updated manually for each iteration we do.
     |
     */
-    'version' => '1.1.6',
+    'version' => '1.1.7',
 
     /*
     |--------------------------------------------------------------------------

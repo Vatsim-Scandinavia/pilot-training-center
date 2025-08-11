@@ -56,18 +56,18 @@ class PilotTrainingTest extends TestCase
     }
 
     #[Test]
-    public function moderator_can_update_training_request()
+    public function admin_can_update_training_request()
     {
-        $moderator = User::factory()->create();
+        $admin = User::factory()->create();
 
         $training = PilotTraining::factory()->create([
             'user_id' => User::factory()->create(['id' => 10000005])->id,
         ]);
 
-        $moderator->groups()->attach(4, ['area_id' => 2]); // pilot trainings dont have ares, so hardcoded
+        $admin->groups()->attach(1, ['area_id' => 2]); // pilot trainings dont have ares, so hardcoded
 
         $this->assertDatabaseHas('pilot_trainings', ['id' => $training->id]);
-        $this->actingAs($moderator)
+        $this->actingAs($admin)
             ->patch($training->path(), $attributes = ['status' => 0])
             ->assertRedirect($training->path())
             ->assertSessionHas('success', 'Training successfully updated');
@@ -92,7 +92,7 @@ class PilotTrainingTest extends TestCase
     }
 
     #[Test]
-    public function instructor_can_update_the_trainings_status()
+    public function instructor_cant_update_the_trainings_status()
     {
         $training = PilotTraining::factory()->create([
             'user_id' => User::factory()->create(['id' => 10000005])->id,
@@ -102,9 +102,9 @@ class PilotTrainingTest extends TestCase
 
         $this->assertDatabaseHas('pilot_trainings', ['id' => $training->id]);
 
-        $this->actingAs($instructor)->patch(route('pilot.training.update.details', ['training' => $training->id]), ['status' => 0]);
-
-        $this->assertDatabaseHas('pilot_trainings', ['id' => $training->id, 'status' => 0]);
+        $this->actingAs($instructor)
+            ->patch(route('pilot.training.update.details', ['training' => $training->id]), ['status' => 0])
+            ->assertStatus(403);
     }
 
     #[Test]
@@ -126,16 +126,17 @@ class PilotTrainingTest extends TestCase
         $training = PilotTraining::factory()->create([
             'user_id' => User::factory()->create(['id' => 10000005])->id,
         ]);
-        $instructor = User::factory()->create();
+        $admin = User::factory()->create();
 
-        $instructor->groups()->attach(4, ['area_id' => 2]);
+        $admin->groups()->attach(1, ['area_id' => 2]);
+        $admin->groups()->attach(4, ['area_id' => 2]);
 
-        $this->actingAs($instructor)
-            ->patchJson(route('pilot.training.update.details', ['training' => $training]), ['instructors' => [$instructor->id]])
+        $this->actingAs($admin)
+            ->patchJson(route('pilot.training.update.details', ['training' => $training]), ['instructors' => [$admin->id]])
             ->assertStatus(302);
 
         $training->refresh();
-        $this->assertTrue($training->instructors->contains($instructor));
+        $this->assertTrue($training->instructors->contains($admin));
     }
 
     #[Test]

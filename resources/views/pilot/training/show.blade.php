@@ -131,7 +131,7 @@
 
                     <div class="mb-3">
                         <label class="form-label" for="trainingStateSelect">Select training state</label>
-                        <select class="form-select"name="status" id="trainingStateSelect" @if(!Auth::user()->isInstructorOrAbove()) disabled @endif>
+                        <select class="form-select"name="status" id="trainingStateSelect" @if(!Auth::user()->isAdmin()) disabled @endif>
                             @foreach ($statuses as $id => $data)
                                 @if($data["assignableByStaff"])
                                     @if($id == $training->status)
@@ -159,7 +159,7 @@
                     </div>
 
                     <hr>
-                    @if (\Auth::user()->isInstructorOrAbove())
+                    @if (\Auth::user()->isAdmin())
                         <div class="mb-3">
                             <label class="form-label" for="assignInstructors">Assigned instructors: <span class="badge bg-secondary">Ctrl/Cmd+Click</span> to select multiple</label>
                             <select multiple class="form-select" name="instructors[]" id="assignInstructors">
@@ -461,14 +461,14 @@
 
                 @if ($training->status >= \App\Helpers\TrainingStatus::PRE_TRAINING->value && $training->status <= \App\Helpers\TrainingStatus::AWAITING_EXAM->value)
                     <div class="dropdown" style="display: inline;">
-                        @can('create', \App\Models\PilotTrainingReport::class)
+                        @can('create', [\App\Models\PilotTrainingReport::class, $training])
                             <button class="btn btn-light btn-icon dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-plus"></i> Create
                             </button>
                         @endcan
 
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            @can('create', \App\Models\PilotTrainingReport::class)
+                            @can('create', [\App\Models\PilotTrainingReport::class, $training])
                                 @if ($training->status >= \App\Helpers\TrainingStatus::PRE_TRAINING->value)
                                     <a class="dropdown-item" href="{{ route('pilot.training.report.create', ['training' => $training->id])}}"><i class="fas fa-file"></i> Training Report</a>
                                 @endif

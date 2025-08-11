@@ -98,7 +98,6 @@
 
         var users = {!! json_encode($users, true) !!};  // Ensure that users includes the pilotTrainings relation
         var payload = {!! json_encode($ratings, true) !!}; // Make sure you also include ratings
-        console.log(users);
         const app = createApp({
             data() {
                 return {

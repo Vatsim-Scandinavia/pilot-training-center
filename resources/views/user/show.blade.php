@@ -392,7 +392,6 @@
             .then(response => response.json())
             .then(data => {
                 var vatsimHours = document.getElementById("vatsim-data");
-                console.log(data.data)
                 if (data.data) {
                     for (let key in data.data) {
                         if (key === "pilot") {

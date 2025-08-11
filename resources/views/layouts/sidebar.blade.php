@@ -69,7 +69,7 @@
             </a>
         </li>
 
-        @if (\Auth::user()->isInstructor())
+        @if (\Auth::user()->isAdmin())
             {{-- Nav Item - Pages Collapse Menu --}}
             <li class="nav-item {{ Route::is('pilot.requests') || Route::is('pilot.requests.history') ? 'active' : '' }}">
             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePilotReq" aria-expanded="true" aria-controls="collapsePilotReq">
@@ -96,7 +96,7 @@
         Members
         </div>
 
-        @if (\Auth::user()->isInstructorOrAbove())
+        @if (\Auth::user()->isAdmin())
 
             {{-- Nav Item - Pages Collapse Menu --}}
             <li class="nav-item {{ Route::is('users') || Route::is('users.other') ? 'active' : '' }}">
