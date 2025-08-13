@@ -38,7 +38,7 @@ class SendPilotTrainingInterestNotifications extends Command
 
             if ($lastInterestRequest == null) {
                 // Notifcation not sent previously, send a new key and store it
-                $key = sha1($training->id . now()->format('Ymd_His') . rand(0,9999));
+                $key = sha1($training->id . now()->format('Ymd_His') . rand(0, 9999));
 
                 $interest = PilotTrainingInterest::create([
                     'pilot_training_id' => $training->id,
@@ -62,14 +62,14 @@ class SendPilotTrainingInterestNotifications extends Command
                     $training->user->notify(new PilotTrainingClosedNotification($training, -4, 'Continued training interest was not confirmed within deadline.'));
                     PilotTrainingActivityController::create($training->id, 'STATUS', -4, $oldStatus, null, 'Continued training interest was not confirmed within deadline.');
                 } elseif ($requestDeadline->diffInDays(now(), true) == 6 && $requestUpdated->diffInDays(now(), true) != 0 && $lastInterestRequest->expired == false && $requestConfirmed == null) {
-                    $this->info('Reminding training ' . $training-id);
+                    $this->info('Reminding training ' . $training - id);
 
                     $lastInterestRequest->updated_at = now();
                     $lastInterestRequest->save();
 
                     $training->user->notify(new PilotTrainingInterestNotification($training, $lastInterestRequest, true));
                 } elseif ($lastInterestRequest->created_at->diffInDays(now(), true) >= 30 && $lastInterestRequest->expired == true) {
-                    $key = sha1($training->id . now()->format('Ymd_His') . rand(0,9999));
+                    $key = sha1($training->id . now()->format('Ymd_His') . rand(0, 9999));
 
                     $interest = PilotTrainingInterest::create([
                         'pilot_training_id' => $training->id,

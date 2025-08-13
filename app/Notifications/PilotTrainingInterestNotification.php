@@ -3,13 +3,11 @@
 namespace App\Notifications;
 
 use anlutro\LaravelSettings\Facade as Setting;
-use App\Http\Controllers\PilotTrainingController;
 use App\Mail\PilotTrainingMail;
 use App\Models\PilotTraining;
 use App\Models\PilotTrainingInterest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class PilotTrainingInterestNotification extends Notification implements ShouldQueue
@@ -17,10 +15,13 @@ class PilotTrainingInterestNotification extends Notification implements ShouldQu
     use Queueable;
 
     private $training;
+
     private $interest;
+
     private $reminder;
+
     private $subjectPrefix = '';
-    
+
     /**
      * Create a new notification instance.
      */
@@ -60,7 +61,7 @@ class PilotTrainingInterestNotification extends Notification implements ShouldQu
 
         $contactMail = Setting::get('ptmEmail');
         $actionUrl = route('pilot.training.confirm.interest', ['training' => $this->training->id, 'key' => $this->interest->key]);
-    
+
         return (new PilotTrainingMail($this->subjectPrefix . 'Confirm Continued Pilot Training Interest', $this->training, $textLines, $contactMail, $url1 = null, $url2 = null, $actionUrl, 'Confirm Interest', 'success'))
             ->to($this->training->user->notificationEmail, $this->training->user->name);
     }

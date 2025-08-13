@@ -9,8 +9,8 @@ use App\Models\Callsign;
 use App\Models\Exam;
 use App\Models\PilotRating;
 use App\Models\PilotTraining;
-use App\Models\PilotTrainingReport;
 use App\Models\PilotTrainingInterest;
+use App\Models\PilotTrainingReport;
 use App\Models\Task;
 use App\Models\User;
 use App\Notifications\PilotTrainingClosedNotification;
@@ -272,7 +272,6 @@ class PilotTrainingController extends Controller
         $activities = $training->activities->sortByDesc('created_at');
         $trainingInterests = PilotTrainingInterest::where('pilot_training_id', $training->id)->orderBy('created_at', 'DESC')->get();
         $activeTrainingInterest = PilotTrainingInterest::where('pilot_training_id', $training->id)->where('expired', false)->get()->count();
-
 
         $requestTypes = TaskController::getTypes();
         $exams = Exam::where('pilot_training_id', $training->id)->get();
