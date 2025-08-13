@@ -11,11 +11,11 @@ class ExamPolicy
 
     public function create(User $user)
     {
-        return $user->isAdmin() || $user->isInstructor();
+        return $user->isAdmin();
     }
 
     public function store(User $user)
     {
-        return $user->isAdmin() || $user->isInstructor();
+        return $user->isAdmin();
     }
 }

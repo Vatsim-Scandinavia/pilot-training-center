@@ -14,12 +14,12 @@ class ExamTest extends TestCase
     use RefreshDatabase, WithFaker;
 
     #[Test]
-    public function instructor_can_create_exam()
+    public function instructor_cannot_create_exam()
     {
         $user = User::factory()->create(['id' => 10000001]);
         $user->groups()->attach(4, ['area_id' => 2]);
 
-        $this->actingAs($user)->assertTrue(Gate::inspect('create', \App\Models\Exam::class)->allowed());
+        $this->actingAs($user)->assertFalse(Gate::inspect('create', \App\Models\Exam::class)->allowed());
     }
 
     #[Test]
@@ -30,12 +30,12 @@ class ExamTest extends TestCase
     }
 
     #[Test]
-    public function instructor_can_store_exam()
+    public function instructor_cannot_store_exam()
     {
         $user = User::factory()->create(['id' => 10000001]);
         $user->groups()->attach(4, ['area_id' => 2]);
 
-        $this->actingAs($user)->assertTrue(Gate::inspect('store', \App\Models\Exam::class)->allowed());
+        $this->actingAs($user)->assertTrue(Gate::inspect('store', \App\Models\Exam::class)->denied());
         $user2 = User::factory()->create(['id' => 10000002]);
         $attributes = [
             'rating' => \App\Models\PilotRating::find($this->faker->numberBetween(1, 7))->id,
@@ -45,7 +45,7 @@ class ExamTest extends TestCase
             'issued_by' => $user2->id,
         ];
 
-        $response = $this->actingAs($user)->post('/exam/store', $attributes)->assertStatus(302);
+        $response = $this->actingAs($user)->post('/exam/store', $attributes)->assertStatus(403);
     }
 
     #[Test]
