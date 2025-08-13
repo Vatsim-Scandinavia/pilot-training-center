@@ -42,16 +42,26 @@ class PilotTrainingCreatedNotification extends Notification implements ShouldQue
     public function toMail($notifiable)
     {
         $textLines = [
-            'We hereby confirm that we have received your training request for ' . $this->training->getInlineRatings() . '.',
-            'Your callsign is: **' . $this->training->callsign->callsign . '**, which will be used for DUAL and solo flights.',
-            'The theory is completed at your own pace and ther is no specific deadline for the exam.',
-            '',
-            'You\'ll need to log in to Moodle once before we can grant you access.',
-            '',
-            'After successfully completing the theoretical exam, you will start practical flight training together with your assigned instructor.',
-            'The theoretical material and other documents are available on the VATSIM Scandinavia wiki.',
-            '',
-            'If you have any questions, feel free to contact your instructor or ask in the pilot training channel on [Discord](' . Setting::get('linkDiscord') . ').',
+            'We hereby confirm that we have received your training request for the ' . $this->training->getInlineRatings() . ' rating. Your personal callsign for training purposes is **' . $this->training->callsign->callsign . '** (SPT: Lightwings).',
+
+            'You will now be placed in the waiting queue for training. While waiting, we expect you to begin studying flight theory. You can start by reviewing the materials available on our wiki.',
+
+            '[Wiki](https://wiki.vatsim-scandinavia.org/shelves/pilot-training)',
+
+            'Once a Flight Instructor becomes available, you will enter the pre-training phase. During this phase, you are required to complete and pass the theory exam. Only after successfully passing the theory exam will you be eligible to begin practical training. Please note that we cannot place you into active training without a completed and passed theory exam. Ideally, the pre-training phase should take no longer than one to two weeks.',
+
+            'Very important: Before we can grant you access to the theory exam, you must log in to Moodle at least once.',
+
+            '[Moodle](https://moodle.vatsim-scandinavia.org/)',
+
+            'If you have any questions, feel free to contact one of our Flight Instructors or ask in the pilot training channel on Discord.',
+
+            '[Discord](http://discord.vatsim-scandinavia.org/)',
+
+            'Best regards,',
+            'Pilot Training Department',
+            'VATSIM Scandinavia',
+
         ];
 
         $bcc = User::allWithGroup(4)->where('setting_notify_newreq', true);
@@ -60,12 +70,9 @@ class PilotTrainingCreatedNotification extends Notification implements ShouldQue
                 $bcc->pull($key);
             }
         }
-
-        $url1 = 'https://wiki.vatsim-scandinavia.org/shelves/pilot-training';
-        $url2 = 'https://moodle.vatsim-scandinavia.org';
         $contactMail = Setting::get('ptmEmail');
 
-        return (new PilotTrainingMail('New Training Request Confirmation', $this->training, $textLines, $contactMail, $url1, $url2))
+        return (new PilotTrainingMail('New Training Request Confirmation', $this->training, $textLines, $contactMail, $url1 = null, $url2 = null))
             ->to($this->training->user->notificationEmail, $this->training->user->name)
             ->bcc($bcc->pluck('notificationEmail'));
     }
