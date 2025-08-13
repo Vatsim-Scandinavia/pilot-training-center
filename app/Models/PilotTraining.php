@@ -40,10 +40,23 @@ class PilotTraining extends Model
                 if (! isset($this->started_at)) {
                     $this->update(['started_at' => now()]);
                 }
+
+                $expired = 1;
+                if ($expiredInterest) {
+                    $expired = 2;
+                }
+                PilotTrainingInterest::where([['pilot_training_id', $this->id], ['expired', false]])->update(['updated_at' => now(), 'expired' => $expired]);
             }
 
             if ($newStatus < 0) {
                 $this->update(['closed_at' => now()]);
+
+                $expired = 1;
+                if ($expiredInterest) {
+                    $expired = 2;
+                }
+
+                PilotTrainingInterest::where([['pilot_training_id', $this->id], ['expired', false]])->update(['updated_at' => now(), 'expired' => $expired]);
 
                 if (isset($this->paused_at)) {
                     $this->paused_length = $this->paused_length + Carbon::create($this->paused_at)->diffInSeconds(Carbon::now());
@@ -102,5 +115,10 @@ class PilotTraining extends Model
     public function exams()
     {
         return $this->hasMany(Exam::class);
+    }
+
+    public function interests()
+    {
+        return $this->hasMany(PilotTrainingInterest::class);
     }
 }

@@ -35,6 +35,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('update:member:details')
             ->dailyAt('05:00');
 
+        // Training interests
+        $schedule->command('send:traininginterests')
+            ->dailyAt('12:00');
+
         // Expire workmail addresses
         $schedule->command('update:workmails')
             ->daily();

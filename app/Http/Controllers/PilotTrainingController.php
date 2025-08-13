@@ -10,6 +10,7 @@ use App\Models\Exam;
 use App\Models\PilotRating;
 use App\Models\PilotTraining;
 use App\Models\PilotTrainingReport;
+use App\Models\PilotTrainingInterest;
 use App\Models\Task;
 use App\Models\User;
 use App\Notifications\PilotTrainingClosedNotification;
@@ -269,11 +270,14 @@ class PilotTrainingController extends Controller
         $statuses = PilotTrainingController::$statuses;
         $experiences = PilotTrainingController::$experiences;
         $activities = $training->activities->sortByDesc('created_at');
+        $trainingInterests = PilotTrainingInterest::where('pilot_training_id', $training->id)->orderBy('created_at', 'DESC')->get();
+        $activeTrainingInterest = PilotTrainingInterest::where('pilot_training_id', $training->id)->where('expired', false)->get()->count();
+
 
         $requestTypes = TaskController::getTypes();
         $exams = Exam::where('pilot_training_id', $training->id)->get();
 
-        return view('pilot.training.show', compact('exams', 'training', 'instructors', 'statuses', 'experiences', 'activities', 'reports', 'requestTypes'));
+        return view('pilot.training.show', compact('exams', 'training', 'instructors', 'statuses', 'experiences', 'activities', 'reports', 'requestTypes', 'trainingInterests', 'activeTrainingInterest'));
     }
 
     public function edit(PilotTraining $training)
@@ -431,6 +435,36 @@ class PilotTrainingController extends Controller
 
         return redirect($training->path())->withSuccess('Pilot training successfully updated');
 
+    }
+
+    public function confirmInterest(PilotTraining $training, string $key)
+    {
+        if (Auth::id() != $training->user->id) {
+            return abort(403);
+        }
+
+        $interest = PilotTrainingInterest::where('pilot_training_id', $training->id)->where('key', $key)->orderBy('created_at')->get()->first();
+
+        if (isset($interest)) {
+            if ($interest->confirmed_at) {
+                return redirect($training->path())->withSuccess('You have already confirmed your interest for this training.');
+            }
+
+            if ($interest->expired) {
+                return redirect($training->path())->withErrors('This training interest link has expired. Please contact staff.');
+            }
+
+            $interest->confirmed_at = now();
+            $interest->updated_at = now();
+            $interest->expired = true;
+            $interest->save();
+
+            ActivityLogController::info('TRAINING', 'Training interest confirmed.');
+
+            return redirect()->to($training->path())->withSuccess('Interest successfully confirmed.');
+        }
+
+        return redirect()->to($training->path())->withErrors('We could not find a training interest confirmation for this training. Please contact technical staff if this issue persists.');
     }
 
     protected function validateUpdateDetails()

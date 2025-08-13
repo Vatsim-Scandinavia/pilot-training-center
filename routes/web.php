@@ -101,6 +101,7 @@ Route::middleware(['auth', 'activity', 'suspended'])->group(function () {
         Route::patch('/pilot/training/{training}', 'updateDetails')->name('pilot.training.update.details');
         Route::get('/pilot/training/edit/{training}', 'edit')->name('pilot.training.edit');
         Route::patch('/pilot/training/edit/{training}', 'updateRequest')->name('pilot.training.update.request');
+        Route::get('/pilot/training/{training}/confirm/{key}', 'confirmInterest')->name('pilot.training.confirm.interest');
     });
 
     Route::post('/pilot/training/activity/comment', [PilotTrainingActivityController::class, 'storeComment'])->name('pilot.training.activity.comment');
