@@ -20,6 +20,6 @@ if [ -z "$APP_KEY" ] && [ ! -f "$PILOT_TRAINING_CENTER_ROOT/.env" ]; then
     php artisan key:generate
 fi
 
-php artisan migrate
+php artisan migrate --force
 
 exec docker-php-entrypoint "$@"
