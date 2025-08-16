@@ -10,7 +10,7 @@ class PilotTrainingInterest extends Model
 
     protected $casts = [
         'deadline' => 'datetime',
-        'created_at' => 'datetime',
+        'confirmed_at' => 'datetime',
     ];
 
     public function pilotTraining()
