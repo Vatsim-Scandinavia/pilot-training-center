@@ -391,8 +391,7 @@ class PilotTrainingController extends Controller
         ActivityLogController::warning('TRAINING', 'Updated pilot training details ' . $training->id .
         ' - Old Status: ' . PilotTrainingController::$statuses[$oldStatus]['text'] .
         ' - New Status: ' . PilotTrainingController::$statuses[$training->status]['text'] .
-        ' - Instructor: ' . $training->instructors->pluck('name') . 
-        ' - Area: ' . $training->area->name);
+        ' - Instructor: ' . $training->instructors->pluck('name'));
 
         if ((int) $training->status != $oldStatus) {
             if ((int) $training->status < TrainingStatus::IN_QUEUE->value) {
