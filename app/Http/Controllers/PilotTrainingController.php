@@ -102,7 +102,7 @@ class PilotTrainingController extends Controller
 
         // Get available trainings (PPL, IR, CMEL, ATPL)
         $pilotRatings = PilotRating::whereNotIn('vatsim_rating', [0, 31, 63])
-            ->whereHas('lessons', function($query){
+            ->whereHas('lessons', function ($query) {
                 $query->where('id', '>', 0);
             })
             ->get();
@@ -391,7 +391,7 @@ class PilotTrainingController extends Controller
         ActivityLogController::warning('TRAINING', 'Updated pilot training details ' . $training->id .
         ' - Old Status: ' . PilotTrainingController::$statuses[$oldStatus]['text'] .
         ' - New Status: ' . PilotTrainingController::$statuses[$training->status]['text'] .
-        ' - Instructor: ' . $training->instructors->pluck('name') . 
+        ' - Instructor: ' . $training->instructors->pluck('name') .
         ' - Area: ' . $training->area->name);
 
         if ((int) $training->status != $oldStatus) {
