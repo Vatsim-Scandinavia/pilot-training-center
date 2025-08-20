@@ -102,7 +102,7 @@ class PilotTrainingController extends Controller
 
         // Get available trainings (PPL, IR, CMEL, ATPL)
         $pilotRatings = PilotRating::whereNotIn('vatsim_rating', [0, 31, 63])
-            ->whereHas('lessons', function($query){
+            ->whereHas('lessons', function ($query) {
                 $query->where('id', '>', 0);
             })
             ->get();
