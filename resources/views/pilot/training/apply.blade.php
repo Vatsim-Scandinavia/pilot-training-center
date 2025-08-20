@@ -42,11 +42,19 @@
                                             @{{ rating.name }}
                                         </option>
                                     </select> 
-                                    <span v-show="errArea" class="text-danger" style="display: none">Select available rating</span>
+                                    <span v-show="errRating" class="text-danger" style="display: none">Select available rating</span>
+                                </div>
+                                <div class="col-xl-6 col-md-6 mb-12">
+                                    <label class="form-label my-1 me-2" for="areaSelect">Training area</label>
+                                    <select id="areaSelect" name="training_area" @change="areaSelectChange($event)" class="form-select my-1 me-sm-2">
+                                        <option selected disabled>Choose training area</option>
+                                        @foreach($areas as $areaId => $area)
+                                            <option value="{{ $areaId }}">{{ $area['name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                    <span v-show="errArea" class="text-danger" style="display: none">Select training area</span>
                                 </div>
                             </div>
-                            <div v-show="errHours" id="errHours" class="text-danger" style="display: none">You need to fulfill the hour requirement before applying for this option.</div>
-
                             <a class="btn btn-success mt-2" href="#" v-on:click="next">Continue</a>
                         </div>
                     </div>
@@ -145,6 +153,7 @@
                     ratings: payload,
                     errRating: 0,
                     errHours: 0,
+                    errArea: 0,
                     errExperience: false,
                     remarkChecked: 0,
                 }
@@ -156,8 +165,14 @@
                 validate(page){
                     var validated = true
                     if(page == 1){
-                        
+                        this.trainingArea = Array.from(document.getElementById('areaSelect').options).find(option => option.selected && !option.disabled)?.value;
                         let trainingLevel = Array.from(document.getElementById('ratingSelect').options).find(option => option.selected && !option.disabled)?.value;
+
+                        if (this.trainingArea == null){
+                            document.getElementById('areaSelect').classList.add('is-invalid')
+                            this.errArea = true;
+                            validated = false;
+                        }
 
                         if (trainingLevel == null) {
                             document.getElementById('ratingSelect').classList.add('is-invalid')

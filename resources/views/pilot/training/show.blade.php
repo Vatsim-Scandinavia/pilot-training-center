@@ -97,7 +97,10 @@
                                 {{ $training->user->name }}</a><button type="button"
                                 onclick="navigator.clipbaoard.writeText('{{ $training->user->first_name . ' ' . $training->user->last_name }}')"><i
                                     class="fas fa-copy"></i></button> </dd>
-
+                        
+                        <dt class="pt-2">Area</dt>
+                        <dd pb-3">
+                            {{ !empty($training->area->name) ? $training->area->name : '-' }}</dd>
                         <dt class="pt-2">Instructor</dt>
                         <dd class="separator pb-3">
                             {{ !empty($training->getInlineInstructors()) ? $training->getInlineInstructors() : '-' }}</dd>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use anlutro\LaravelSettings\Facade as Setting;
 use App;
 use App\Helpers\TrainingStatus;
+use App\Models\Area;
 use App\Models\Callsign;
 use App\Models\Exam;
 use App\Models\PilotRating;
@@ -119,8 +120,16 @@ class PilotTrainingController extends Controller
             }
         }
 
+        $areas = Area::all();
+        foreach ($areas as $area) {
+            if ($area->id > 1) {
+                $areaPayload[$area->id]['name'] = $area->name;
+            }
+        }
+
         return view('pilot.training.apply', [
             'payload' => $payload,
+            'areas' => $areaPayload,
             'pilot_hours' => $vatsimStats,
             'motivation_required' => ($userPilotRating <= 2) ? 1 : 0,
         ]);
@@ -145,6 +154,7 @@ class PilotTrainingController extends Controller
             'experience' => isset($data['experience']) ? $data['experience'] : null,
             'comment' => isset($data['comment']) ? $data['comment'] : null,
             'english_only_training' => array_key_exists('englishOnly', $data) ? true : false,
+            'area_id' => isset($data['training_area']) ? $data['training_area'] : null,
         ]);
 
         if ($ratings->count() > 1) {
@@ -288,8 +298,9 @@ class PilotTrainingController extends Controller
         $this->authorize('edit', [PilotTraining::class, $training]);
 
         $pilotRatings = PilotRating::all();
+        $areas = Area::all();
 
-        return view('pilot.training.edit', compact('training', 'pilotRatings'));
+        return view('pilot.training.edit', compact('training', 'pilotRatings', 'areas'));
     }
 
     public function updateDetails(PilotTraining $training)
@@ -380,7 +391,8 @@ class PilotTrainingController extends Controller
         ActivityLogController::warning('TRAINING', 'Updated pilot training details ' . $training->id .
         ' - Old Status: ' . PilotTrainingController::$statuses[$oldStatus]['text'] .
         ' - New Status: ' . PilotTrainingController::$statuses[$training->status]['text'] .
-        ' - Instructor: ' . $training->instructors->pluck('name'));
+        ' - Instructor: ' . $training->instructors->pluck('name') . 
+        ' - Area: ' . $training->area->name);
 
         if ((int) $training->status != $oldStatus) {
             if ((int) $training->status < TrainingStatus::IN_QUEUE->value) {
@@ -411,7 +423,9 @@ class PilotTrainingController extends Controller
         $attributes = $this->validateUpdateEdit();
 
         $preChangeRatings = $training->pilotRatings;
+        $preChangeArea = $training->area;
 
+        // Detach old rating(s), add new one from validated edit
         $training->pilotRatings()->detach();
         if (isset($attributes['pilotRatings'])) {
             $pilotRatings = PilotRating::find($attributes['pilotRatings']);
@@ -425,6 +439,12 @@ class PilotTrainingController extends Controller
             $training->pilotRatings()->save($pilotRatings->first());
         }
 
+        // Detach old area if exists and then set a new one
+        if (isset($attributes['area'])) {
+            $area = Area::find($attributes['area']);
+            $training->area()->associate($area);
+        }
+
         $training->english_only_training = array_key_exists('englishOnly', $attributes) ? true : false;
 
         $training->save();
@@ -434,7 +454,8 @@ class PilotTrainingController extends Controller
         ActivityLogController::warning('TRAINING', 'Updated pilot training request ' . $training->id .
         ' - Old Rating: ' . $preChangeRatings->pluck('name') .
         ' - New Rating: ' . $pilotRatings->pluck('name') .
-        ' - English only: ' . ($training->english_only_training ? 'true' : 'false'));
+        ' - English only: ' . ($training->english_only_training ? 'true' : 'false') .
+        ' - Area: ' . $training->area->name);
 
         return redirect($training->path())->withSuccess('Pilot training successfully updated');
 
@@ -479,6 +500,7 @@ class PilotTrainingController extends Controller
             'user_id' => 'sometimes|required|integer',
             'comment' => 'nullable',
             'training_level' => 'sometimes|required',
+            'training_area' => 'sometimes|required|integer',
             'status' => 'sometimes|required|integer',
             'instructors' => 'sometimes',
             'closed_reason' => 'sometimes|max:65',
@@ -490,6 +512,7 @@ class PilotTrainingController extends Controller
         return request()->validate([
             'pilotRatings' => 'sometimes|required',
             'englishOnly' => 'nullable',
+            'area' => 'sometimes|required|integer',
         ]);
     }
 }

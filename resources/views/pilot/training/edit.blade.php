@@ -23,19 +23,36 @@
                     </div>
  
                     <div class="mb-3">
-                        <label class="form-label my-1 me-2" for="ratingSelect">Training level <span class="badge bg-secondary">Ctrl/Cmd+Click</span> to select multiple</label>
+                        <label class="form-label my-1 me-2" for="ratingSelect">Training level</label>
                         <select id="ratingSelect" name="pilotRatings[]" class="form-select @error('pilotRatings') is-invalid @enderror">
                             @foreach($pilotRatings as $rating)
-                                @if($training->pilotRatings->where('id', $rating->id)->count())
-                                    <option value="{{ $rating->id }}" selected>{{ $rating->name }}</option>
-                                @else
-                                    <option value="{{ $rating->id }}">{{ $rating->name }}</option>
+                                @if ($rating->id > 1)
+                                    @if($training->pilotRatings->where('id', $rating->id)->count())
+                                        <option value="{{ $rating->id }}" selected>{{ $rating->name }}</option>
+                                    @else
+                                        <option value="{{ $rating->id }}">{{ $rating->name }}</option>
+                                    @endif
+                                @endif
+                            @endforeach
+                        </select>
+                        <label class="form-lavel my-1 me-2" for="areaSelect">Training area</label>
+                        <select id="areaSelect" name="area" class="form-select @error('area') is-invalid @enderror">
+                            @foreach ($areas as $area)
+                                @if ($area->id > 1)
+                                    <option value="{{ $area->id }}" 
+                                        {{ $training->area_id == $area->id ? 'selected' : '' }}>
+                                        {{ $area->name }}
+                                    </option>
                                 @endif
                             @endforeach
                         </select>
                         
                         @error('pilotRatings')
                             <span class="text-danger">{{ $errors->first('pilotRatings') }}</span>
+                        @enderror
+
+                        @error('area')
+                            <span class="text-danger">{{ $errors->first('area') }}</span>
                         @enderror
                     </div>
                     

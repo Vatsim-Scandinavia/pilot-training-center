@@ -121,4 +121,9 @@ class PilotTraining extends Model
     {
         return $this->hasMany(PilotTrainingInterest::class);
     }
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class);
+    }
 }
